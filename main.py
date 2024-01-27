@@ -9,6 +9,9 @@ predictor = dlib.shape_predictor(predictor_path)
 image_path = "FACES_database/004_o_m_h_a.jpg"
 image = cv2.imread(image_path)
 
+#cap = cv2.VideoCapture(0)
+#_, image = cap.read()
+
 # Convert the image to grayscale
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
