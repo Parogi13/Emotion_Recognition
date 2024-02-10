@@ -35,18 +35,19 @@ def emotion_determiner(shot, gray_scaled, actual_emotion):
         # Get the facial landmarks
         landmarks = predictor(gray_scaled, face)
 
+        x, y, w, h = (face.left(), face.top(), face.width(), face.height())
         # Indicators from the Facial Action Coding System
-        outer_brow_distance = abs(landmarks.part(17).y - landmarks.part(36).y) / 100
-        inner_brow_distance = abs(landmarks.part(20).y - landmarks.part(38).y) / 100
-        mid_brow_distance = abs(landmarks.part(19).y - landmarks.part(37).y) / 100
-        lid_tightness = abs(landmarks.part(41).y - landmarks.part(37).y) / 100
-        lip_corner_depressor = abs(landmarks.part(48).x - landmarks.part(54).x) / 100
-        lip_corner_puller = abs(landmarks.part(54).y - landmarks.part(48).y) / 100
-        lip_tightness = abs(landmarks.part(51).y - landmarks.part(57).y) / 100
-        jaw_drop = abs(landmarks.part(57).y - landmarks.part(8).y) / 100
-        nose_wrinkle = abs(landmarks.part(31).x - landmarks.part(35).x) / 100
-        cheek_raiser = abs(landmarks.part(1).y - landmarks.part(4).y) / 100
-        upper_lid_raiser = abs(landmarks.part(19).y - landmarks.part(41).y) / 100
+        outer_brow_distance = abs(landmarks.part(17).y - landmarks.part(36).y) / (h)
+        inner_brow_distance = abs(landmarks.part(20).y - landmarks.part(38).y) / (h)
+        mid_brow_distance = abs(landmarks.part(19).y - landmarks.part(37).y) / (h)
+        lid_tightness = abs(landmarks.part(41).y - landmarks.part(37).y) / (h)
+        lip_corner_depressor = abs(landmarks.part(48).x - landmarks.part(54).x) / (w)
+        lip_corner_puller = abs(landmarks.part(54).y - landmarks.part(48).y) / (h)
+        lip_tightness = abs(landmarks.part(51).y - landmarks.part(57).y) / (h)
+        jaw_drop = abs(landmarks.part(57).y - landmarks.part(8).y) / (h)
+        nose_wrinkle = abs(landmarks.part(31).x - landmarks.part(35).x) / (w)
+        cheek_raiser = abs(landmarks.part(1).y - landmarks.part(4).y) / (h)
+        upper_lid_raiser = abs(landmarks.part(19).y - landmarks.part(41).y) / (h)
 
         # Accumulate indicators based on the detected emotion
         if actual_emotion == "Happy":
@@ -56,12 +57,12 @@ def emotion_determiner(shot, gray_scaled, actual_emotion):
         elif actual_emotion == "Sad":
             sad_indicators[0] += mid_brow_distance
             sad_indicators[1] += inner_brow_distance
-            sad_indicators[2] += outer_brow_distance
+            sad_indicators[2] += lip_corner_depressor
             sad_count += 1
         elif actual_emotion == "Disgust":
-            disgust_indicators[0] += lid_tightness
+            disgust_indicators[0] += nose_wrinkle
             disgust_indicators[1] += lip_tightness
-            disgust_indicators[2] += jaw_drop
+            disgust_indicators[2] += lip_corner_depressor
             disgust_count += 1
         elif actual_emotion == "Fear":
             fear_indicators[0] += jaw_drop
@@ -80,28 +81,23 @@ def emotion_determiner(shot, gray_scaled, actual_emotion):
 
     # Print the average indicators for each emotion
     if happy_count > 0:
-        print(
-            f"Happy - cheek raiser: {happy_indicators[0] / happy_count} lip corner puller: {happy_indicators[1] / happy_count}")
+        print(f"Happy - cheek raiser: {happy_indicators[0] / happy_count} lip corner puller: {happy_indicators[1] / happy_count}")
     else:
         print("No happy faces detected")
     if sad_count > 0:
-        print(
-            f"Sad - mid brow distance: {sad_indicators[0] / sad_count} inner brow distance: {sad_indicators[1] / sad_count} outer brow distance: {sad_indicators[2] / sad_count}")
+        print(f"Sad - mid brow distance: {sad_indicators[0] / sad_count} inner brow distance: {sad_indicators[1] / sad_count} lip corner depressor: {sad_indicators[2] / sad_count}")
     else:
         print("No sad faces detected")
     if disgust_count > 0:
-        print(
-            f"Disgust - lid tightness: {disgust_indicators[0] / disgust_count} lip tightness: {disgust_indicators[1] / disgust_count} jaw drop: {disgust_indicators[2] / disgust_count}")
+        print(f"Disgust - nose wrinkle: {disgust_indicators[0] / disgust_count} lip tightness: {disgust_indicators[1] / disgust_count} lip corner depressor: {disgust_indicators[2] / disgust_count}")
     else:
         print("No disgust faces detected")
     if fear_count > 0:
-        print(
-            f"Fear - jaw drop: {fear_indicators[0] / fear_count} inner brow distance: {fear_indicators[1] / fear_count} mid brow distance: {fear_indicators[2] / fear_count} outer brow distance: {fear_indicators[3] / fear_count} lid tightness: {fear_indicators[4] / fear_count} upper lid raiser: {fear_indicators[5] / fear_count}")
+        print(f"Fear - jaw drop: {fear_indicators[0] / fear_count} inner brow distance: {fear_indicators[1] / fear_count} mid brow distance: {fear_indicators[2] / fear_count} outer brow distance: {fear_indicators[3] / fear_count} lid tightness: {fear_indicators[4] / fear_count} upper lid raiser: {fear_indicators[5] / fear_count}")
     else:
         print("No fear faces detected")
     if anger_count > 0:
-        print(
-            f"Anger - lid tightness: {anger_indicators[0] / anger_count} lip tightness: {anger_indicators[1] / anger_count} mid brow distance: {anger_indicators[2] / anger_count} upper lid raiser: {anger_indicators[3] / anger_count}")
+        print(f"Anger - lid tightness: {anger_indicators[0] / anger_count} lip tightness: {anger_indicators[1] / anger_count} mid brow distance: {anger_indicators[2] / anger_count} upper lid raiser: {anger_indicators[3] / anger_count}")
     else:
         print("No anger faces detected")
 
