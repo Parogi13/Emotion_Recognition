@@ -44,6 +44,7 @@ def emotion_determiner(shot, gray_scaled, show):
         print(f"Upper Lid Raiser: {upper_lid_raiser}")
 
         # Determine emotion based on indicators
+        '''
         emotion = "Neutral"
         if (cheek_raiser < (0.37463335754342814*1.3) and cheek_raiser > (0.37463335754342814*0.8)) and (lip_corner_puller > (0.015152883642177718*0) and lip_corner_puller < (0.015152883642177718*2.25)):
             emotion = "Happy"
@@ -55,7 +56,7 @@ def emotion_determiner(shot, gray_scaled, show):
             emotion = "Disgust"
         if (inner_brow_distance > 0.1413795034423165*0.8 and inner_brow_distance < 0.1413795034423165*1.2) and (outer_brow_distance < 0.07223343417369775*1.2 and outer_brow_distance > 0.07223343417369775*0.8) and (mid_brow_distance < 0.14802722709155844*1.2 and mid_brow_distance > 0.14802722709155844*0.8) and (lid_tightness > 0.06546390403684983*0.8 and lid_tightness < 0.06546390403684983*1.2) and (jaw_drop > 0.25328672872909336*0.8 and jaw_drop < 0.25328672872909336*1.2) and (upper_lid_raiser > 0.25328672872909336*0.8 and upper_lid_raiser < 0.25328672872909336*1.2):
             emotion = "Fear"
-
+        '''
 
         print(f"Predicted Emotion: {emotion}")
 
