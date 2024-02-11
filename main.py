@@ -93,17 +93,17 @@ def emotion_determiner(shot, gray_scaled, show):
 
         # Determine emotion based on indicators
         emotion = "Neutral"
-        if (cheek_raiser < (happy_cheek_raiser_avg*1.2) and cheek_raiser > (happy_cheek_raiser_avg*.8)) and (lip_corner_puller > (happy_lip_corner_puller_avg*0.8) and lip_corner_puller < (happy_lip_corner_puller_avg*1.2)):
-            emotion = "Happy"
-        if (mid_brow_distance < (anger_mid_brow_distance_avg*1.2) and mid_brow_distance > (anger_mid_brow_distance_avg*0.8)) and (lid_tightness < (anger_lid_tightness_avg*1.2) and lid_tightness > anger_lip_tightness_avg*0.8) and (lip_tightness < anger_lip_tightness_avg*1.2 and lip_tightness > anger_lip_tightness_avg*0.8) and (upper_lid_raiser < anger_upper_lid_raiser_avg*1.2 and upper_lid_raiser > anger_upper_lid_raiser_avg*0.8):
-            emotion = "Anger"
-        if (inner_brow_distance < sad_inner_brow_distance_avg*1.2 and inner_brow_distance > sad_inner_brow_distance_avg*0.65) and (lip_corner_depressor < sad_lip_corner_depressor_avg*1.75 and lip_corner_depressor > sad_lip_corner_depressor_avg*0.4) and (mid_brow_distance < sad_mid_brow_distance_avg*1.4 and mid_brow_distance > sad_mid_brow_distance_avg*0.8):
-            emotion = "Sad"
-        if (nose_wrinkle > disgust_nose_wrinkle_avg*0.8 and nose_wrinkle < disgust_nose_wrinkle_avg*1.2) and (lip_corner_depressor < disgust_lip_corner_depressor_avg*2 and lip_corner_depressor > disgust_lip_corner_depressor_avg*0.8) and (lip_tightness > disgust_lip_tightness_avg*0.8 and lip_tightness < disgust_lip_tightness_avg*1.2):
-            emotion = "Disgust"
-        if (inner_brow_distance > fear_inner_brow_distance_avg*0.8 and inner_brow_distance < fear_inner_brow_distance_avg*1.2) and (outer_brow_distance < fear_outer_brow_distance_avg*1.2 and outer_brow_distance > fear_outer_brow_distance_avg*0.8) and (mid_brow_distance < fear_mid_brow_distance_avg*1.2 and mid_brow_distance > fear_mid_brow_distance_avg*0.8) and (lid_tightness > fear_lid_tightness_avg*0.8 and lid_tightness < fear_lid_tightness_avg*1.2) and (jaw_drop > fear_jaw_drop_avg*0.8 and jaw_drop < fear_jaw_drop_avg*1.2) and (upper_lid_raiser > fear_upper_lid_raiser_avg*0.8 and upper_lid_raiser < fear_upper_lid_raiser_avg*1.2):
-            emotion = "Fear"
 
+        if (mid_brow_distance <= (0.12825860271115747) and mid_brow_distance >= (0.05444305381727159)) and (lid_tightness <= (0.0600375234521576) and lid_tightness >= 0.02137643378519291) and (lip_tightness <= 0.37987987987987987 and lip_tightness >= 0.29107981220657275) and (upper_lid_raiser <= 0.1553701772679875 and upper_lid_raiser >= 0.09824780976220275):
+            emotion = "Anger"
+        if (inner_brow_distance <= 0.14643304130162704 and inner_brow_distance >= 0.05787278415015641) and (lip_corner_depressor <= 0.04640250260688217 and lip_corner_depressor >= 0.007509386733416771) and (mid_brow_distance <= 0.15224191866527634 and mid_brow_distance >= 0.09332638164754953):
+            emotion = "Sad"
+        if (nose_wrinkle >= 0.19405320813771518 and nose_wrinkle <= 0.2334834834834835) and (lip_corner_depressor <= 0.09324155193992491 and lip_corner_depressor >= 0.011470281543274244) and (lip_tightness >= 0.28325508607198746 and lip_tightness <= 0.392991239048811):
+            emotion = "Disgust"
+        if (inner_brow_distance >= 0.08967674661105318 and inner_brow_distance <= 0.18699186991869918) and (outer_brow_distance <= 0.10427528675703858 and outer_brow_distance >= 0.05735140771637122) and (mid_brow_distance <= 0.17823639774859287 and mid_brow_distance >= 0.10844629822732013) and (lid_tightness >= 0.051094890510948905 and lid_tightness <= 0.07559958289885298) and (jaw_drop >= 0.410844629822732 and jaw_drop <= 0.5443169968717414) and (upper_lid_raiser >= 0.16996871741397288 and upper_lid_raiser <= 0.24640400250156347):
+            emotion = "Fear"
+        if (cheek_raiser <= (0.3430930930930931) and cheek_raiser >= (0.20963704630788485)) and (lip_corner_puller >= (0.1904016692749087) and lip_corner_puller <= (0.265015015015015)):
+            emotion = "Happy"
         print(f"Predicted Emotion: {emotion}")
 
         if show:

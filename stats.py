@@ -22,8 +22,34 @@ anger_indicators = [0, 0, 0, 0]  # lid_tightness, lip_tightness, mid_brow_distan
 sad_indicators = [0, 0, 0]  # mid_brow_distance, inner_brow_distance, outer_brow_distance
 fear_indicators = [0, 0, 0, 0, 0,0]  # jaw_drop, inner_brow_distance, mid_brow_distance, outer_brow_distance, lid_tightness, upper_lid_raiser
 disgust_indicators = [0, 0, 0]  # lid_tightness, lip_tightness, jaw_drop
+
+#Happy
 happy_cheek_raiser = []
 happy_lip_corner_puller = []
+
+#Sad
+sad_mid_brow_distance = []
+sad_inner_brow_distance = []
+sad_lip_corner_depressor = []
+
+#Disgust
+disgust_nose_wrinkle = []
+disgust_lip_tightness= []
+disgust_lip_corner_depressor = []
+
+#Fear
+fear_jaw_drop= []
+fear_inner_brow_distance= []
+fear_mid_brow_distance= []
+fear_outer_brow_distance= []
+fear_lid_tightness= []
+fear_upper_lid_raiser= []
+
+#Anger
+anger_lid_tightness= []
+anger_lip_tightness= []
+anger_mid_brow_distance= []
+anger_upper_lid_raiser= []
 
 # Function will determine the emotion
 def emotion_determiner(shot, gray_scaled, actual_emotion):
@@ -49,8 +75,6 @@ def emotion_determiner(shot, gray_scaled, actual_emotion):
         cheek_raiser = abs(landmarks.part(36).y - landmarks.part(2).y) / (h)
         upper_lid_raiser = abs(landmarks.part(19).y - landmarks.part(41).y) / (h)
 
-
-
         # Accumulate indicators based on the detected emotion
         if actual_emotion == "Happy":
             happy_indicators[0] += cheek_raiser
@@ -62,11 +86,17 @@ def emotion_determiner(shot, gray_scaled, actual_emotion):
             sad_indicators[0] += mid_brow_distance
             sad_indicators[1] += inner_brow_distance
             sad_indicators[2] += lip_corner_depressor
+            sad_mid_brow_distance.append(mid_brow_distance)
+            sad_inner_brow_distance.append(inner_brow_distance)
+            sad_lip_corner_depressor.append(lip_corner_depressor)
             sad_count += 1
         elif actual_emotion == "Disgust":
             disgust_indicators[0] += nose_wrinkle
             disgust_indicators[1] += lip_tightness
             disgust_indicators[2] += lip_corner_depressor
+            disgust_nose_wrinkle.append(nose_wrinkle)
+            disgust_lip_tightness.append(lip_tightness)
+            disgust_lip_corner_depressor.append(lip_corner_depressor)
             disgust_count += 1
         elif actual_emotion == "Fear":
             fear_indicators[0] += jaw_drop
@@ -75,12 +105,22 @@ def emotion_determiner(shot, gray_scaled, actual_emotion):
             fear_indicators[3] += outer_brow_distance
             fear_indicators[4] += lid_tightness
             fear_indicators[5] += upper_lid_raiser
+            fear_jaw_drop.append(jaw_drop)
+            fear_inner_brow_distance.append(inner_brow_distance)
+            fear_outer_brow_distance.append(outer_brow_distance)
+            fear_mid_brow_distance.append(mid_brow_distance)
+            fear_upper_lid_raiser.append(upper_lid_raiser)
+            fear_lid_tightness.append(lid_tightness)
             fear_count += 1
         elif actual_emotion == "Anger":
             anger_indicators[0] += lid_tightness
             anger_indicators[1] += lip_tightness
             anger_indicators[2] += mid_brow_distance
             anger_indicators[3] += upper_lid_raiser
+            anger_lid_tightness.append(lid_tightness)
+            anger_lip_tightness.append(lip_tightness)
+            anger_mid_brow_distance.append(mid_brow_distance)
+            anger_upper_lid_raiser.append(upper_lid_raiser)
             anger_count += 1
 
     # Print the average indicators for each emotion
@@ -162,27 +202,19 @@ elif choice == "g":
         emotion_determiner(faces, gray, actualEmotion)
     print("min: "+str(min(happy_cheek_raiser)) + "max: " + str(max(happy_cheek_raiser))+": happy cheek raiser")
     print("min: " + str(min(happy_lip_corner_puller)) + "max: " + str(max(happy_lip_corner_puller)) + ": happy lip corner puller")
-elif choice == "n":
-    cap = cv2.VideoCapture(0)
-
-    while True:
-        # Read a frame from the webcam
-        ret, image = cap.read()
-
-        # Convert the frame to grayscale
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-        # Use the dlib detector to find faces in the frame
-        detector = dlib.get_frontal_face_detector()
-        faces = detector(gray)
-
-        # Call the emotion determiner function
-        emotion_determiner(faces, gray, True)
-
-        # Break the loop when the 'u' key is pressed
-        if cv2.waitKey(1) & 0xFF == ord('u'):
-            break
-
-    # Release the webcam and close all windows
-    cap.release()
-    cv2.destroyAllWindows()
+    print("min: " + str(min(sad_mid_brow_distance)) + "max: " + str(max(sad_mid_brow_distance)) + ": sad mid brow distance")
+    print("min: " + str(min(sad_lip_corner_depressor)) + "max: " + str(max(sad_lip_corner_depressor)) + ": sad lip corner depressor")
+    print("min: " + str(min(sad_inner_brow_distance)) + "max: " + str(max(sad_inner_brow_distance)) + ": sad inner brow distance")
+    print("min: " + str(min(anger_lip_tightness)) + "max: " + str(max(anger_lip_tightness)) + ": anger lip tightness")
+    print("min: " + str(min(anger_lid_tightness)) + "max: " + str(max(anger_lid_tightness)) + ": anger lid tightness")
+    print("min: " + str(min(anger_upper_lid_raiser)) + "max: " + str(max(anger_upper_lid_raiser)) + ": anger upper lid raiser")
+    print("min: " + str(min(anger_mid_brow_distance)) + "max: " + str(max(anger_mid_brow_distance)) + ": anger mid brow distance")
+    print("min: " + str(min(fear_jaw_drop)) + "max: " + str(max(fear_jaw_drop)) + ": fear jaw drop")
+    print("min: " + str(min(fear_inner_brow_distance)) + "max: " + str(max(fear_inner_brow_distance)) + ": fear inner brow distance")
+    print("min: " + str(min(fear_outer_brow_distance)) + "max: " + str(max(fear_outer_brow_distance)) + ": fear outer brow distance")
+    print("min: " + str(min(fear_mid_brow_distance)) + "max: " + str(max(fear_mid_brow_distance)) + ": fear mid brow distance")
+    print("min: " + str(min(fear_upper_lid_raiser)) + "max: " + str(max(fear_upper_lid_raiser)) + ": fear upper lid raiser")
+    print("min: " + str(min(fear_lid_tightness)) + "max: " + str(max(fear_lid_tightness)) + ": fear lid tightness")
+    print("min: " + str(min(disgust_nose_wrinkle)) + "max: " + str(max(disgust_nose_wrinkle)) + ": disgust nose wrinkle")
+    print("min: " + str(min(disgust_lip_corner_depressor)) + "max: " + str(max(disgust_lip_corner_depressor)) + ": disgust lip corner depressor")
+    print("min: " + str(min(disgust_lip_tightness)) + "max: " + str(max(disgust_lip_tightness)) + ": disgust lip tightness")
