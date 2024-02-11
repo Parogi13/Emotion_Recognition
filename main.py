@@ -42,7 +42,7 @@ def emotion_determiner(shot, gray_scaled, show):
         nose_wrinkle = abs(landmarks.part(31).x - landmarks.part(35).x) / (w)
         cheek_raiser = abs(landmarks.part(36).y - landmarks.part(2).y) / (h)
         upper_lid_raiser = abs(landmarks.part(19).y - landmarks.part(41).y) / (h)
-
+        '''
         print(f"Cheek Raiser: {cheek_raiser}")
         print(f"Lip Corner Puller: {lip_corner_puller}")
         print(f"Outer Brow Distance: {outer_brow_distance}")
@@ -54,7 +54,7 @@ def emotion_determiner(shot, gray_scaled, show):
         print(f"Jaw Drop: {jaw_drop}")
         print(f"Nose Wrinkle: {nose_wrinkle}")
         print(f"Upper Lid Raiser: {upper_lid_raiser}")
-
+        '''
         # Happy
         happy_cheek_raiser_avg = float(configs.get("happy_cheek_raiser").data)
         happy_lip_corner_puller_avg = float(configs.get("happy_lip_corner_puller").data)
@@ -104,7 +104,7 @@ def emotion_determiner(shot, gray_scaled, show):
             emotion = "Fear"
         if (cheek_raiser <= (0.3430930930930931) and cheek_raiser >= (0.20963704630788485)) and (lip_corner_puller >= (0.1904016692749087) and lip_corner_puller <= (0.265015015015015)):
             emotion = "Happy"
-        print(f"Predicted Emotion: {emotion}")
+        #print(f"Predicted Emotion: {emotion}")
 
         if show:
             # Returns and displays emotion
@@ -119,10 +119,10 @@ def emotion_determiner(shot, gray_scaled, show):
 
 
 # Ask for image or camera
-choice = input("Image or camera? (y/n)")
+choice = input("Image, database, or camera? (i/d/c)")
 
 # Set to either image or camera
-if choice == "y":
+if choice == "i":
     # Load the image
     # h = happy a = angry f = fearful s = sad d = disgusted n = neutral
     image_path = "./FACES_database/004_o_m_d_a.jpg"
@@ -131,7 +131,7 @@ if choice == "y":
     detector = dlib.get_frontal_face_detector()
     faces = detector(gray)
     emotion_determiner(faces, gray, True)
-elif choice == "g":
+elif choice == "d":
     correct = 0
     total = 0
     happy = 0
@@ -152,13 +152,15 @@ elif choice == "g":
     predFear = 0
     predNeutral = 0
     predDisgust = 0
-
+    right = True
+    print("Image,Actual_Emotion,Predicted_Emotion,Correct")
     for file in os.listdir(facesDB):
         total += 1
         image_path = os.path.join(facesDB, file)  # Construct full file path
+        #print(f"File: {image_path}")
         image = cv2.imread(image_path)
         if image is None:
-            print(f"Failed to load image: {image_path}")
+            #print(f"Failed to load image: {image_path}")
             continue
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         detector = dlib.get_frontal_face_detector()
@@ -191,7 +193,7 @@ elif choice == "g":
             actualEmotion = "Disgust"
             disgust += 1
             # predictedEmotion = emotion_determiner(faces, gray, False)
-        print(f"Actual Emotion: {actualEmotion}")
+        #print(f"Actual Emotion: {actualEmotion}")
         if predictedEmotion == "Happy":
             predHappy += 1
         elif predictedEmotion == "Anger":
@@ -204,9 +206,12 @@ elif choice == "g":
             predDisgust += 1
         elif predictedEmotion == "Fear":
             predFear += 1
+
         if actualEmotion == predictedEmotion:
             correct += 1
+            right = True
         else:
+            right = False
             if actualEmotion == "Happy":
                 wrongHappy += 1
             elif actualEmotion == "Anger":
@@ -219,6 +224,8 @@ elif choice == "g":
                 wrongDisgust += 1
             elif actualEmotion == "Fear":
                 wrongFear += 1
+        print(f"{image_path},{actualEmotion},{predictedEmotion},{right}")
+    '''
     print(f"Correct: {correct}")
     print(f"Total: {total}")
     print(f"Total happy: {happy}")
@@ -239,7 +246,9 @@ elif choice == "g":
     print(f"Predicted fear: {predFear}")
     print(f"Predicted disgust: {predDisgust}")
     print(f"Predicted neutral: {predNeutral}")
-elif choice == "n":
+    '''
+
+elif choice == "c":
     cap = cv2.VideoCapture(0)
 
     while True:
