@@ -12,6 +12,8 @@ anger = 0
 fear = 0
 neutral = 0
 disgust = 0
+right = False
+print("Image,Actual_Emotion,Predicted_Emotion,Correct")
 
 for file in os.listdir(db):
     image_path = os.path.join(db, file)  # Construct full file path
@@ -27,8 +29,8 @@ for file in os.listdir(db):
     total += 1
 
     # print result
-    print("Image name" +image_path)
-    print(result)
+    #print("Image name" +image_path)
+    #print(result)
 
     actualEmotion = file[0]
     if actualEmotion == "h":
@@ -56,9 +58,11 @@ for file in os.listdir(db):
         disgust += 1
 
     dominantEmotion = result[0]['dominant_emotion']
-    print("dominant emotion " + dominantEmotion)
+    #print("dominant emotion " + dominantEmotion)
     if dominantEmotion == actualEmotion:
         correct += 1
 
-print(f"Correct: {correct}")
-print(f"Total: {total}")
+    print(f"{image_path},{actualEmotion},{dominantEmotion},{right}")
+
+#print(f"Correct: {correct}")
+#print(f"Total: {total}")
