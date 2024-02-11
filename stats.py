@@ -20,10 +20,10 @@ disgust_count = 0
 happy_indicators = [0, 0]  # cheek_raiser, lip_corner_puller
 anger_indicators = [0, 0, 0, 0]  # lid_tightness, lip_tightness, mid_brow_distance, upper_lid_raiser
 sad_indicators = [0, 0, 0]  # mid_brow_distance, inner_brow_distance, outer_brow_distance
-fear_indicators = [0, 0, 0, 0, 0,
-                   0]  # jaw_drop, inner_brow_distance, mid_brow_distance, outer_brow_distance, lid_tightness, upper_lid_raiser
+fear_indicators = [0, 0, 0, 0, 0,0]  # jaw_drop, inner_brow_distance, mid_brow_distance, outer_brow_distance, lid_tightness, upper_lid_raiser
 disgust_indicators = [0, 0, 0]  # lid_tightness, lip_tightness, jaw_drop
-
+happy_cheek_raiser = []
+happy_lip_corner_puller = []
 
 # Function will determine the emotion
 def emotion_determiner(shot, gray_scaled, actual_emotion):
@@ -38,21 +38,25 @@ def emotion_determiner(shot, gray_scaled, actual_emotion):
         x, y, w, h = (face.left(), face.top(), face.width(), face.height())
         # Indicators from the Facial Action Coding System
         outer_brow_distance = abs(landmarks.part(17).y - landmarks.part(36).y) / (h)
-        inner_brow_distance = abs(landmarks.part(20).y - landmarks.part(38).y) / (h)
+        inner_brow_distance = abs(landmarks.part(21).y - landmarks.part(39).y) / (h)
         mid_brow_distance = abs(landmarks.part(19).y - landmarks.part(37).y) / (h)
         lid_tightness = abs(landmarks.part(41).y - landmarks.part(37).y) / (h)
-        lip_corner_depressor = abs(landmarks.part(48).x - landmarks.part(54).x) / (w)
-        lip_corner_puller = abs(landmarks.part(54).y - landmarks.part(48).y) / (h)
-        lip_tightness = abs(landmarks.part(51).y - landmarks.part(57).y) / (h)
-        jaw_drop = abs(landmarks.part(57).y - landmarks.part(8).y) / (h)
+        lip_corner_depressor = abs(landmarks.part(51).y - landmarks.part(48).y) / (h)
+        lip_corner_puller = abs(landmarks.part(51).x - landmarks.part(48).x) / (w)
+        lip_tightness = abs(landmarks.part(54).x - landmarks.part(48).x) / (w)
+        jaw_drop = abs(landmarks.part(33).y - landmarks.part(8).y) / (h)
         nose_wrinkle = abs(landmarks.part(31).x - landmarks.part(35).x) / (w)
-        cheek_raiser = abs(landmarks.part(1).y - landmarks.part(4).y) / (h)
+        cheek_raiser = abs(landmarks.part(36).y - landmarks.part(2).y) / (h)
         upper_lid_raiser = abs(landmarks.part(19).y - landmarks.part(41).y) / (h)
+
+
 
         # Accumulate indicators based on the detected emotion
         if actual_emotion == "Happy":
             happy_indicators[0] += cheek_raiser
             happy_indicators[1] += lip_corner_puller
+            happy_cheek_raiser.append(cheek_raiser)
+            happy_lip_corner_puller.append(lip_corner_puller)
             happy_count += 1
         elif actual_emotion == "Sad":
             sad_indicators[0] += mid_brow_distance
@@ -153,8 +157,11 @@ elif choice == "g":
         elif actualEmotion == "d":
             actualEmotion = "Disgust"
             disgust += 1
+        print(f"Filename : {image_path}")
         print(f"Actual Emotion: {actualEmotion}")
         emotion_determiner(faces, gray, actualEmotion)
+    print("min: "+str(min(happy_cheek_raiser)) + "max: " + str(max(happy_cheek_raiser))+": happy cheek raiser")
+    print("min: " + str(min(happy_lip_corner_puller)) + "max: " + str(max(happy_lip_corner_puller)) + ": happy lip corner puller")
 elif choice == "n":
     cap = cv2.VideoCapture(0)
 

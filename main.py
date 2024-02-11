@@ -1,6 +1,12 @@
 import cv2
 import dlib
 import os
+from jproperties import Properties
+
+# Load in properties values
+configs = Properties()
+with open('config.properties', 'rb') as averages:
+    configs.load(averages)
 
 # Load the pre-trained facial landmark predictor
 predictor_path = "shape_predictor_68_face_landmarks.dat"
@@ -9,27 +15,33 @@ predictor = dlib.shape_predictor(predictor_path)
 # Set up FACES database
 facesDB = "./FACES_database/"
 
-# add facial framing. for example, distance can change a face's ratios. need 2 fix this
+# Function will be able to find magnitude of difference between two numbers and express as a percentage
+def percent(number, avg):
+    if number <= avg:
+        return number/avg
+    else:
+        return ((2*avg - number)/avg)
 
 # Function will determine the emotion
 def emotion_determiner(shot, gray_scaled, show):
+
     # Loop over each face if there's multiple
     for face in shot:
         # Get the facial landmarks
         landmarks = predictor(gray_scaled, face)
         x, y, w, h = (face.left(), face.top(), face.width(), face.height())
         # Indicators from the Facial Action Coding System
-        outer_brow_distance = abs(landmarks.part(17).y - landmarks.part(36).y)/(h)
-        inner_brow_distance = abs(landmarks.part(20).y - landmarks.part(38).y)/(h)
-        mid_brow_distance = abs(landmarks.part(19).y - landmarks.part(37).y)/(h)
-        lid_tightness = abs(landmarks.part(41).y - landmarks.part(37).y)/(h)
-        lip_corner_depressor = abs(landmarks.part(48).x - landmarks.part(54).x)/(w)
-        lip_corner_puller = abs(landmarks.part(54).y - landmarks.part(48).y)/(h)
-        lip_tightness = abs(landmarks.part(51).y - landmarks.part(57).y)/(h)
-        jaw_drop = abs(landmarks.part(57).y - landmarks.part(8).y)/(h)
-        nose_wrinkle = abs(landmarks.part(31).x - landmarks.part(35).x)/(w)
-        cheek_raiser = abs(landmarks.part(1).y - landmarks.part(4).y)/(h)
-        upper_lid_raiser = abs(landmarks.part(19).y - landmarks.part(41).y)/(h)
+        outer_brow_distance = abs(landmarks.part(17).y - landmarks.part(36).y) / (h)
+        inner_brow_distance = abs(landmarks.part(21).y - landmarks.part(39).y) / (h)
+        mid_brow_distance = abs(landmarks.part(19).y - landmarks.part(37).y) / (h)
+        lid_tightness = abs(landmarks.part(41).y - landmarks.part(37).y) / (h)
+        lip_corner_depressor = abs(landmarks.part(51).y - landmarks.part(48).y) / (h)
+        lip_corner_puller = abs(landmarks.part(51).x - landmarks.part(48).x) / (w)
+        lip_tightness = abs(landmarks.part(54).x - landmarks.part(48).x) / (w)
+        jaw_drop = abs(landmarks.part(33).y - landmarks.part(8).y) / (h)
+        nose_wrinkle = abs(landmarks.part(31).x - landmarks.part(35).x) / (w)
+        cheek_raiser = abs(landmarks.part(36).y - landmarks.part(2).y) / (h)
+        upper_lid_raiser = abs(landmarks.part(19).y - landmarks.part(41).y) / (h)
 
         print(f"Cheek Raiser: {cheek_raiser}")
         print(f"Lip Corner Puller: {lip_corner_puller}")
@@ -43,20 +55,54 @@ def emotion_determiner(shot, gray_scaled, show):
         print(f"Nose Wrinkle: {nose_wrinkle}")
         print(f"Upper Lid Raiser: {upper_lid_raiser}")
 
+        # Happy
+        happy_cheek_raiser_avg = float(configs.get("happy_cheek_raiser").data)
+        happy_lip_corner_puller_avg = float(configs.get("happy_lip_corner_puller").data)
+        '''happy_cheek_raiser = percent(cheek_raiser,happy_cheek_raiser_avg)
+        happy_lip_corner_puller = percent(lip_corner_puller,happy_lip_corner_puller_avg)
+        happyConfidence = (happy_cheek_raiser+happy_lip_corner_puller)/2
+        #print(f"Happy confidence: {happyConfidence}")'''
+
+        # Sad
+        sad_mid_brow_distance_avg = float(configs.get("sad_mid_brow_distance").data)
+        sad_inner_brow_distance_avg = float(configs.get("sad_inner_brow_distance").data)
+        sad_lip_corner_depressor_avg = float(configs.get("sad_lip_corner_depressor").data)
+        '''sad_mid_brow_distance = percent(mid_brow_distance, sad_mid_brow_distance_avg)
+        sad_inner_brow_distance = percent(inner_brow_distance, sad_inner_brow_distance_avg)
+        sad_lip_corner_depressor = percent(lip_corner_depressor,sad_lip_corner_depressor_avg)
+        sadConfidence = (sad_lip_corner_depressor+sad_inner_brow_distance+sad_mid_brow_distance) / 3
+        #print(f"Sad confidence: {sadConfidence}")'''
+
+        # Disgust
+        disgust_nose_wrinkle_avg = float(configs.get("disgust_nose_wrinkle").data)
+        disgust_lip_tightness_avg = float(configs.get("disgust_lip_tightness").data)
+        disgust_lip_corner_depressor_avg = float(configs.get("disgust_lip_corner_depressor").data)
+
+        # Fear
+        fear_jaw_drop_avg = float(configs.get("fear_jaw_drop").data)
+        fear_inner_brow_distance_avg = float(configs.get("fear_inner_brow_distance").data)
+        fear_mid_brow_distance_avg = float(configs.get("fear_mid_brow_distance").data)
+        fear_outer_brow_distance_avg = float(configs.get("fear_outer_brow_distance").data)
+        fear_lid_tightness_avg = float(configs.get("fear_lid_tightness").data)
+        fear_upper_lid_raiser_avg = float(configs.get("fear_upper_lid_raiser").data)
+        # Anger
+        anger_lid_tightness_avg = float(configs.get("anger_lid_tightness").data)
+        anger_lip_tightness_avg = float(configs.get("anger_lip_tightness").data)
+        anger_mid_brow_distance_avg = float(configs.get("anger_mid_brow_distance").data)
+        anger_upper_lid_raiser_avg = float(configs.get("anger_upper_lid_raiser").data)
+
         # Determine emotion based on indicators
-        '''
         emotion = "Neutral"
-        if (cheek_raiser < (0.37463335754342814*1.3) and cheek_raiser > (0.37463335754342814*0.8)) and (lip_corner_puller > (0.015152883642177718*0) and lip_corner_puller < (0.015152883642177718*2.25)):
+        if (cheek_raiser < (happy_cheek_raiser_avg*1.2) and cheek_raiser > (happy_cheek_raiser_avg*.8)) and (lip_corner_puller > (happy_lip_corner_puller_avg*0.8) and lip_corner_puller < (happy_lip_corner_puller_avg*1.2)):
             emotion = "Happy"
-        if (mid_brow_distance < (0.08960082063968598*1.3) and mid_brow_distance > (0.08960082063968598*0.6)) and (lid_tightness < (0.04096565598249651*1.6) and lid_tightness > 0.04096565598249651*0.7) and (lip_tightness < 0.05944637349849057*2.1 and lip_tightness > 0.05944637349849057*0.03) and (upper_lid_raiser < 0.1305664766221825*1.3 and upper_lid_raiser > 0.1305664766221825*0.7):
+        if (mid_brow_distance < (anger_mid_brow_distance_avg*1.2) and mid_brow_distance > (anger_mid_brow_distance_avg*0.8)) and (lid_tightness < (anger_lid_tightness_avg*1.2) and lid_tightness > anger_lip_tightness_avg*0.8) and (lip_tightness < anger_lip_tightness_avg*1.2 and lip_tightness > anger_lip_tightness_avg*0.8) and (upper_lid_raiser < anger_upper_lid_raiser_avg*1.2 and upper_lid_raiser > anger_upper_lid_raiser_avg*0.8):
             emotion = "Anger"
-        if (inner_brow_distance < 0.10798011548150865*1.2 and inner_brow_distance > 0.10798011548150865*0.8) and (lip_corner_depressor < 0.3651929079070056*1.2 and lip_corner_depressor > 0.3651929079070056*0.8) and (mid_brow_distance < 0.12011136183002478*1.2 and mid_brow_distance > 0.12011136183002478*0.8):
+        if (inner_brow_distance < sad_inner_brow_distance_avg*1.2 and inner_brow_distance > sad_inner_brow_distance_avg*0.65) and (lip_corner_depressor < sad_lip_corner_depressor_avg*1.75 and lip_corner_depressor > sad_lip_corner_depressor_avg*0.4) and (mid_brow_distance < sad_mid_brow_distance_avg*1.4 and mid_brow_distance > sad_mid_brow_distance_avg*0.8):
             emotion = "Sad"
-        if (nose_wrinkle > 0.21200304711685555*0.8 and nose_wrinkle < 0.21200304711685555*1.2) and (lip_corner_depressor < 0.34682658188341575*1.2 and lip_corner_depressor > 0.34682658188341575*0.8) and (lip_tightness > 0.11492076682292701*0.8 and lip_tightness < 0.11492076682292701*1.2):
+        if (nose_wrinkle > disgust_nose_wrinkle_avg*0.8 and nose_wrinkle < disgust_nose_wrinkle_avg*1.2) and (lip_corner_depressor < disgust_lip_corner_depressor_avg*2 and lip_corner_depressor > disgust_lip_corner_depressor_avg*0.8) and (lip_tightness > disgust_lip_tightness_avg*0.8 and lip_tightness < disgust_lip_tightness_avg*1.2):
             emotion = "Disgust"
-        if (inner_brow_distance > 0.1413795034423165*0.8 and inner_brow_distance < 0.1413795034423165*1.2) and (outer_brow_distance < 0.07223343417369775*1.2 and outer_brow_distance > 0.07223343417369775*0.8) and (mid_brow_distance < 0.14802722709155844*1.2 and mid_brow_distance > 0.14802722709155844*0.8) and (lid_tightness > 0.06546390403684983*0.8 and lid_tightness < 0.06546390403684983*1.2) and (jaw_drop > 0.25328672872909336*0.8 and jaw_drop < 0.25328672872909336*1.2) and (upper_lid_raiser > 0.25328672872909336*0.8 and upper_lid_raiser < 0.25328672872909336*1.2):
+        if (inner_brow_distance > fear_inner_brow_distance_avg*0.8 and inner_brow_distance < fear_inner_brow_distance_avg*1.2) and (outer_brow_distance < fear_outer_brow_distance_avg*1.2 and outer_brow_distance > fear_outer_brow_distance_avg*0.8) and (mid_brow_distance < fear_mid_brow_distance_avg*1.2 and mid_brow_distance > fear_mid_brow_distance_avg*0.8) and (lid_tightness > fear_lid_tightness_avg*0.8 and lid_tightness < fear_lid_tightness_avg*1.2) and (jaw_drop > fear_jaw_drop_avg*0.8 and jaw_drop < fear_jaw_drop_avg*1.2) and (upper_lid_raiser > fear_upper_lid_raiser_avg*0.8 and upper_lid_raiser < fear_upper_lid_raiser_avg*1.2):
             emotion = "Fear"
-        '''
 
         print(f"Predicted Emotion: {emotion}")
 
@@ -100,6 +146,12 @@ elif choice == "g":
     wrongFear = 0
     wrongNeutral = 0
     wrongDisgust = 0
+    predHappy = 0
+    predSad = 0
+    predAnger = 0
+    predFear = 0
+    predNeutral = 0
+    predDisgust = 0
 
     for file in os.listdir(facesDB):
         total += 1
@@ -113,6 +165,7 @@ elif choice == "g":
         faces = detector(gray)
         predictedEmotion = ""
         predictedEmotion = emotion_determiner(faces, gray, False)
+
         actualEmotion = file[8]
         if actualEmotion == "h":
             actualEmotion = "Happy"
@@ -121,7 +174,7 @@ elif choice == "g":
         elif actualEmotion == "a":
             actualEmotion = "Anger"
             anger += 1
-            #predictedEmotion = emotion_determiner(faces, gray, False)
+            # predictedEmotion = emotion_determiner(faces, gray, False)
         elif actualEmotion == "n":
             actualEmotion = "Neutral"
             neutral += 1
@@ -139,6 +192,18 @@ elif choice == "g":
             disgust += 1
             # predictedEmotion = emotion_determiner(faces, gray, False)
         print(f"Actual Emotion: {actualEmotion}")
+        if predictedEmotion == "Happy":
+            predHappy += 1
+        elif predictedEmotion == "Anger":
+            predAnger += 1
+        elif predictedEmotion == "Neutral":
+            predNeutral += 1
+        elif predictedEmotion == "Sad":
+            predSad += 1
+        elif predictedEmotion == "Disgust":
+            predDisgust += 1
+        elif predictedEmotion == "Fear":
+            predFear += 1
         if actualEmotion == predictedEmotion:
             correct += 1
         else:
@@ -168,6 +233,12 @@ elif choice == "g":
     print(f"Wrong disgust: {wrongDisgust}")
     print(f"Wrong neutral: {wrongNeutral}")
     print(f"Wrong anger: {wrongAnger}")
+    print(f"Predicted happy: {predHappy}")
+    print(f"Predicted sad: {predSad}")
+    print(f"Predicted anger: {predAnger}")
+    print(f"Predicted fear: {predFear}")
+    print(f"Predicted disgust: {predDisgust}")
+    print(f"Predicted neutral: {predNeutral}")
 elif choice == "n":
     cap = cv2.VideoCapture(0)
 
