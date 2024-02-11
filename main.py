@@ -13,7 +13,7 @@ predictor_path = "shape_predictor_68_face_landmarks.dat"
 predictor = dlib.shape_predictor(predictor_path)
 
 # Set up FACES database
-facesDB = "./testImages/"
+facesDB = "./FACES_database/"
 
 # Function will be able to find magnitude of difference between two numbers and express as a percentage
 def percent(number, avg):
@@ -168,7 +168,7 @@ elif choice == "d":
         predictedEmotion = ""
         predictedEmotion = emotion_determiner(faces, gray, False)
 
-        actualEmotion = file[0]
+        actualEmotion = file[8]
         if actualEmotion == "h":
             actualEmotion = "Happy"
             happy += 1

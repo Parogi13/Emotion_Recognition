@@ -2,7 +2,7 @@ import cv2
 from deepface import DeepFace
 import os
 
-db = './testImages/'
+db = './FACES_database/'
 
 correct = 0
 total = 0
@@ -32,7 +32,7 @@ for file in os.listdir(db):
     #print("Image name" +image_path)
     #print(result)
 
-    actualEmotion = file[0]
+    actualEmotion = file[8]
     if actualEmotion == "h":
         actualEmotion = "happy"
         happy += 1
@@ -61,6 +61,9 @@ for file in os.listdir(db):
     #print("dominant emotion " + dominantEmotion)
     if dominantEmotion == actualEmotion:
         correct += 1
+        right = True
+    else:
+        right = False
 
     print(f"{image_path},{actualEmotion},{dominantEmotion},{right}")
 
