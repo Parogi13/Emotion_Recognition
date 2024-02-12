@@ -15,13 +15,6 @@ predictor = dlib.shape_predictor(predictor_path)
 # Set up FACES database
 facesDB = "./FACES_database/"
 
-# Function will be able to find magnitude of difference between two numbers and express as a percentage
-def percent(number, avg):
-    if number <= avg:
-        return number/avg
-    else:
-        return ((2*avg - number)/avg)
-
 # Function will determine the emotion
 def emotion_determiner(shot, gray_scaled, show):
 

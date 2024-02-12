@@ -145,76 +145,61 @@ def emotion_determiner(shot, gray_scaled, actual_emotion):
     else:
         print("No anger faces detected")
 
-
-# Ask for image or camera
-choice = input("Image or camera? (y/n)")
-
-# Set to either image or camera
-if choice == "y":
-    # Load the image
-    # h = happy a = angry f = fearful s = sad d = disgusted n = neutral
-    image_path = "./FACES_database/004_o_m_d_a.jpg"
+correct = 0
+total = 0
+happy = 0
+sad = 0
+anger = 0
+fear = 0
+neutral = 0
+disgust = 0
+for file in os.listdir(facesDB):
+    total += 1
+    image_path = os.path.join(facesDB, file)  # Construct full file path
     image = cv2.imread(image_path)
+    if image is None:
+        print(f"Failed to load image: {image_path}")
+        continue
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     detector = dlib.get_frontal_face_detector()
     faces = detector(gray)
-    emotion_determiner(faces, gray, "Disgust")
-elif choice == "g":
-    correct = 0
-    total = 0
-    happy = 0
-    sad = 0
-    anger = 0
-    fear = 0
-    neutral = 0
-    disgust = 0
-    for file in os.listdir(facesDB):
-        total += 1
-        image_path = os.path.join(facesDB, file)  # Construct full file path
-        image = cv2.imread(image_path)
-        if image is None:
-            print(f"Failed to load image: {image_path}")
-            continue
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        detector = dlib.get_frontal_face_detector()
-        faces = detector(gray)
-        actualEmotion = file[8]
-        if actualEmotion == "h":
-            actualEmotion = "Happy"
-            happy += 1
-        elif actualEmotion == "a":
-            actualEmotion = "Anger"
-            anger += 1
-        elif actualEmotion == "n":
-            actualEmotion = "Neutral"
-            neutral += 1
-        elif actualEmotion == "s":
-            actualEmotion = "Sad"
-            sad += 1
-        elif actualEmotion == "f":
-            actualEmotion = "Fear"
-            fear += 1
-        elif actualEmotion == "d":
-            actualEmotion = "Disgust"
-            disgust += 1
-        print(f"Filename : {image_path}")
-        print(f"Actual Emotion: {actualEmotion}")
-        emotion_determiner(faces, gray, actualEmotion)
-    print("min: "+str(min(happy_cheek_raiser)) + "max: " + str(max(happy_cheek_raiser))+": happy cheek raiser")
-    print("min: " + str(min(happy_lip_corner_puller)) + "max: " + str(max(happy_lip_corner_puller)) + ": happy lip corner puller")
-    print("min: " + str(min(sad_mid_brow_distance)) + "max: " + str(max(sad_mid_brow_distance)) + ": sad mid brow distance")
-    print("min: " + str(min(sad_lip_corner_depressor)) + "max: " + str(max(sad_lip_corner_depressor)) + ": sad lip corner depressor")
-    print("min: " + str(min(sad_inner_brow_distance)) + "max: " + str(max(sad_inner_brow_distance)) + ": sad inner brow distance")
-    print("min: " + str(min(anger_lip_tightness)) + "max: " + str(max(anger_lip_tightness)) + ": anger lip tightness")
-    print("min: " + str(min(anger_lid_tightness)) + "max: " + str(max(anger_lid_tightness)) + ": anger lid tightness")
-    print("min: " + str(min(anger_upper_lid_raiser)) + "max: " + str(max(anger_upper_lid_raiser)) + ": anger upper lid raiser")
-    print("min: " + str(min(anger_mid_brow_distance)) + "max: " + str(max(anger_mid_brow_distance)) + ": anger mid brow distance")
-    print("min: " + str(min(fear_jaw_drop)) + "max: " + str(max(fear_jaw_drop)) + ": fear jaw drop")
-    print("min: " + str(min(fear_inner_brow_distance)) + "max: " + str(max(fear_inner_brow_distance)) + ": fear inner brow distance")
-    print("min: " + str(min(fear_outer_brow_distance)) + "max: " + str(max(fear_outer_brow_distance)) + ": fear outer brow distance")
-    print("min: " + str(min(fear_mid_brow_distance)) + "max: " + str(max(fear_mid_brow_distance)) + ": fear mid brow distance")
-    print("min: " + str(min(fear_upper_lid_raiser)) + "max: " + str(max(fear_upper_lid_raiser)) + ": fear upper lid raiser")
-    print("min: " + str(min(fear_lid_tightness)) + "max: " + str(max(fear_lid_tightness)) + ": fear lid tightness")
-    print("min: " + str(min(disgust_nose_wrinkle)) + "max: " + str(max(disgust_nose_wrinkle)) + ": disgust nose wrinkle")
-    print("min: " + str(min(disgust_lip_corner_depressor)) + "max: " + str(max(disgust_lip_corner_depressor)) + ": disgust lip corner depressor")
-    print("min: " + str(min(disgust_lip_tightness)) + "max: " + str(max(disgust_lip_tightness)) + ": disgust lip tightness")
+    actualEmotion = file[8]
+    if actualEmotion == "h":
+        actualEmotion = "Happy"
+        happy += 1
+    elif actualEmotion == "a":
+        actualEmotion = "Anger"
+        anger += 1
+    elif actualEmotion == "n":
+        actualEmotion = "Neutral"
+        neutral += 1
+    elif actualEmotion == "s":
+        actualEmotion = "Sad"
+        sad += 1
+    elif actualEmotion == "f":
+        actualEmotion = "Fear"
+        fear += 1
+    elif actualEmotion == "d":
+        actualEmotion = "Disgust"
+        disgust += 1
+    print(f"Filename : {image_path}")
+    print(f"Actual Emotion: {actualEmotion}")
+    emotion_determiner(faces, gray, actualEmotion)
+print("min: "+str(min(happy_cheek_raiser)) + "max: " + str(max(happy_cheek_raiser))+": happy cheek raiser")
+print("min: " + str(min(happy_lip_corner_puller)) + "max: " + str(max(happy_lip_corner_puller)) + ": happy lip corner puller")
+print("min: " + str(min(sad_mid_brow_distance)) + "max: " + str(max(sad_mid_brow_distance)) + ": sad mid brow distance")
+print("min: " + str(min(sad_lip_corner_depressor)) + "max: " + str(max(sad_lip_corner_depressor)) + ": sad lip corner depressor")
+print("min: " + str(min(sad_inner_brow_distance)) + "max: " + str(max(sad_inner_brow_distance)) + ": sad inner brow distance")
+print("min: " + str(min(anger_lip_tightness)) + "max: " + str(max(anger_lip_tightness)) + ": anger lip tightness")
+print("min: " + str(min(anger_lid_tightness)) + "max: " + str(max(anger_lid_tightness)) + ": anger lid tightness")
+print("min: " + str(min(anger_upper_lid_raiser)) + "max: " + str(max(anger_upper_lid_raiser)) + ": anger upper lid raiser")
+print("min: " + str(min(anger_mid_brow_distance)) + "max: " + str(max(anger_mid_brow_distance)) + ": anger mid brow distance")
+print("min: " + str(min(fear_jaw_drop)) + "max: " + str(max(fear_jaw_drop)) + ": fear jaw drop")
+print("min: " + str(min(fear_inner_brow_distance)) + "max: " + str(max(fear_inner_brow_distance)) + ": fear inner brow distance")
+print("min: " + str(min(fear_outer_brow_distance)) + "max: " + str(max(fear_outer_brow_distance)) + ": fear outer brow distance")
+print("min: " + str(min(fear_mid_brow_distance)) + "max: " + str(max(fear_mid_brow_distance)) + ": fear mid brow distance")
+print("min: " + str(min(fear_upper_lid_raiser)) + "max: " + str(max(fear_upper_lid_raiser)) + ": fear upper lid raiser")
+print("min: " + str(min(fear_lid_tightness)) + "max: " + str(max(fear_lid_tightness)) + ": fear lid tightness")
+print("min: " + str(min(disgust_nose_wrinkle)) + "max: " + str(max(disgust_nose_wrinkle)) + ": disgust nose wrinkle")
+print("min: " + str(min(disgust_lip_corner_depressor)) + "max: " + str(max(disgust_lip_corner_depressor)) + ": disgust lip corner depressor")
+print("min: " + str(min(disgust_lip_tightness)) + "max: " + str(max(disgust_lip_tightness)) + ": disgust lip tightness")
